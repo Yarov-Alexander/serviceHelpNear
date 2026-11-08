@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@700&display=swap");
+@use "./helpers" as *;
 
 :root {
   --color-bg: #fff7ec;
@@ -18,6 +18,30 @@
   --container: 1200px;
   --section-space: 72px;
   --transition: 180ms ease;
+
+  --border: var(--border-width-s) solid var(--color-black-15);
+
+  --border-width-xl: 6px;
+  --border-width-l: 4px;
+  --border-width-m: 3px;
+  --border-width-s: 1px;
+
+  --border-radius-l: 12px;
+  --border-radius-m: 10px;
+  --border-radius-s: 8px;
+  --border-radius-xs: 6px;
+  --border-radius-xxs: 5px;
+  --border-radius-xxxs: 4px;
+
+  --font-family-base: "Manrope", sans-serif;
+
+  --container-width: #{fluid-to-laptop($container-desktop-width, $container-laptop-width)};
+  --container-padding-x: 16px;
+
+  --section-padding-y: #{fluid(75, 40)};
+
+  --transition-duration: 0.2s;
+  --transition-duration-longer: 0.4s;
 }
 
 @media (min-width: 768px) {
