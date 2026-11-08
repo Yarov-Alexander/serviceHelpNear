@@ -1,0 +1,75 @@
+.create-order-form {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+}
+
+.create-order-form__row {
+  display: grid;
+  gap: 14px;
+}
+
+.create-order-form__field {
+  position: relative;
+  display: grid;
+  gap: 7px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    color: var(--color-text);
+    background: #fffaf4;
+
+    &::placeholder {
+      color: #92969c;
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--color-accent);
+    }
+  }
+}
+
+.create-order-form__price-input {
+  position: relative;
+
+  span {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    color: var(--color-muted);
+    transform: translateY(-50%);
+  }
+}
+
+.create-order-form__error {
+  color: #a7321f;
+  font-size: 12px;
+}
+
+.create-order-form__submit {
+  width: 100%;
+  margin-top: 2px;
+}
+
+@media (min-width: 620px) {
+  .create-order-form {
+    padding: 22px;
+  }
+
+  .create-order-form__row {
+    grid-template-columns: 1fr 0.8fr;
+  }
+}

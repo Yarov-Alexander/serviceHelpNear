@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@700&display=swap");
+
+:root {
+  --color-bg: #fff7ec;
+  --color-card: #fff;
+  --color-text: #1e2a3a;
+  --color-muted: #69717d;
+  --color-accent: #ff6b4a;
+  --color-accent-hover: #f65b39;
+  --color-mint: #bfd8c5;
+  --color-yellow: #ffd66b;
+  --color-border: rgba(30, 42, 58, 0.14);
+  --font-heading: "Unbounded", sans-serif;
+  --font-body: "Onest", sans-serif;
+  --radius-md: 20px;
+  --radius-lg: 24px;
+  --shadow-card: 0 18px 50px rgba(70, 49, 30, 0.1);
+  --container: 1200px;
+  --section-space: 72px;
+  --transition: 180ms ease;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-space: 104px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --section-space: 128px;
+  }
+}

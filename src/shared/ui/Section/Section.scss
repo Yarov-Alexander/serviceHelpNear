@@ -1,0 +1,14 @@
+.layout-section {
+  width: 100%;
+}
+
+.layout-section__container {
+  width: min(100% - 32px, var(--container));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .layout-section__container {
+    width: min(100% - 64px, var(--container));
+  }
+}
