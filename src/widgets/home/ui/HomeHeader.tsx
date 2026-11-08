@@ -19,30 +19,39 @@ export function HomeHeader({ onCreateOrder }: HomeHeaderProps) {
 
   return (
     <header className="header">
-      <div className="header__inner">
+      <div className="header__inner container">
         <Logo />
-        <nav className="header__desktop-nav" aria-label="Основная навигация">
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+
+        <div id="header-panel" className={classNames("header__panel", isOpen && "is-active")}>
+          <nav aria-label="Основная навигация">
+            <ul className="header__menu-list">
+              {navItems.map(({ href, label }) => (
+                <li key={href}>
+                  <a className="header__menu-link" href={href} onClick={close}>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <Button className="header__panel-cta" onClick={handleCreateOrder}>
+            Создать заказ
+          </Button>
+        </div>
+
         <div className="header__actions">
           <Button variant="secondary" className="header__login">
             Войти
           </Button>
-          <Button onClick={handleCreateOrder} className="header__cta">
+          <Button className="header__cta" onClick={handleCreateOrder}>
             Создать заказ
           </Button>
           <button
             type="button"
-            className={classNames("header__burger", isOpen && "header__burger--open")}
+            className={classNames("header__burger", isOpen && "is-active")}
             aria-label={isOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={isOpen}
-            aria-controls="mobile-menu"
+            aria-controls="header-panel"
             onClick={toggle}
           >
             <span />
@@ -50,24 +59,6 @@ export function HomeHeader({ onCreateOrder }: HomeHeaderProps) {
             <span />
           </button>
         </div>
-      </div>
-
-      <div
-        id="mobile-menu"
-        className={classNames("header__mobile-menu", isOpen && "header__mobile-menu--open")}
-      >
-        <nav aria-label="Мобильная навигация">
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} onClick={close}>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <Button onClick={handleCreateOrder}>Создать заказ</Button>
       </div>
     </header>
   );
