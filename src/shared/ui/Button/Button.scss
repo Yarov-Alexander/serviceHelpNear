@@ -1,4 +1,6 @@
 .button {
+  display: flex;
+  align-items: center;
   min-height: 50px;
   padding: 0 22px;
   cursor: pointer;
@@ -13,10 +15,13 @@
 
   &:hover {
     transform: translateY(-2px);
+    background: var(--color-button-black);
+    color: var(--color-card);
   }
 
   &:active {
     transform: translateY(0);
+    background: var(--color-muted);
   }
 }
 
