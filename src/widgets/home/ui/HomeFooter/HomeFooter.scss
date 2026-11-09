@@ -1,0 +1,87 @@
+.footer {
+  padding-block: 56px 32px;
+  color: #fff;
+  background: var(--color-text);
+}
+
+.footer__inner {
+  display: grid;
+  gap: 36px;
+}
+
+.footer__brand {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 16px;
+}
+
+.footer__tagline {
+  max-width: 32ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+.footer__links {
+  display: grid;
+  justify-items: start; /* ссылка занимает только ширину текста, а не всей колонки */
+  align-content: start;
+  gap: 10px;
+}
+
+.footer__label {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.footer__link {
+  color: rgba(255, 255, 255, 0.8);
+  overflow-wrap: anywhere; /* длинный e-mail не вылезет на узких экранах */
+  text-underline-offset: 4px;
+  transition: color var(--transition);
+
+  &:hover {
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+}
+
+.footer__copyright {
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .footer__inner {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+    gap: 40px clamp(48px, 8vw, 120px);
+  }
+
+  .footer__brand,
+  .footer__copyright {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1050px) {
+  .footer__inner {
+    grid-template-columns: repeat(3, max-content);
+  }
+
+  .footer__brand {
+    grid-column: auto;
+  }
+}

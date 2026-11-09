@@ -1,0 +1,32 @@
+.final-cta {
+  padding-bottom: var(--section-space);
+}
+
+.final-cta__inner {
+  display: grid;
+  gap: 28px;
+  padding: 40px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-mint);
+  align-items: center;
+
+}
+
+.final-cta__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(29px, 5vw, 52px);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.final-cta__button {
+  width: fit-content;
+}
+
+@media (min-width: 768px) {
+  .final-cta__inner {
+    grid-template-columns: 1fr auto;
+    padding: 52px;
+  }
+}

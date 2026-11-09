@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { useMobileMenu } from "../../../shared/lib";
-import { Button } from "../../../shared/ui/Button";
-import { Logo } from "../../../shared/ui/Logo";
-import { navItems } from "../model/content.mock";
+import { useMobileMenu } from "../../../../shared/lib";
+import { Button } from "../../../../shared/ui/Button";
+import { Logo } from "../../../../shared/ui/Logo";
+import { navItems } from "../../model/content.mock";
 import "./HomeHeader.scss";
 
 type HomeHeaderProps = {

@@ -1,0 +1,29 @@
+.home__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  color: #52675a;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home__section,
+.home__faq-section {
+  padding-block: var(--section-space);
+}
+
+.home__section-heading {
+  max-width: 760px;
+  margin-bottom: 42px;
+
+  h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(32px, 6vw, 58px);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+}
