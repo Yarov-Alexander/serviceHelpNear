@@ -11,9 +11,11 @@
     "lint:styles": "stylelint \"src/**/*.scss\""
   },
   "dependencies": {
+    "@a1rth/css-normalize": "1.1.9",
     "classnames": "^2.5.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router": "^8.5.1"
   },
   "devDependencies": {
     "@feature-sliced/steiger-plugin": "^0.8.2",

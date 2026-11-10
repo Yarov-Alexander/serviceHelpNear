@@ -1,0 +1,56 @@
+"filename", "language", "JSON with Comments", "SCSS", "TypeScript JSX", "TypeScript", "JSON", "Markdown", "JavaScript", "YAML", "TOML", "HTML", "comment", "blank", "total"
+"d:\Doljno\.figma\README.md", "Markdown", 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 4, 14
+"d:\Doljno\.figma\make\deploy.json", "JSON", 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 4
+"d:\Doljno\.figma\make\dev.json", "JSON", 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 15, 1, 20
+"d:\Doljno\.figma\make\site.json", "JSON", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\.mise.toml", "TOML", 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"d:\Doljno\AGENTS.md", "Markdown", 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 14, 38
+"d:\Doljno\CLAUDE.md", "Markdown", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 4, 1, 17
+"d:\Doljno\package.json", "JSON", 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 1, 37
+"d:\Doljno\pnpm-lock.yaml", "YAML", 0, 0, 0, 0, 0, 0, 0, 1586, 0, 0, 0, 438, 2024
+"d:\Doljno\pnpm-workspace.yaml", "YAML", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 3
+"d:\Doljno\src\App.scss", "SCSS", 0, 415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 476
+"d:\Doljno\src\app\App.tsx", "TypeScript JSX", 0, 0, 176, 0, 0, 0, 0, 0, 0, 0, 0, 14, 190
+"d:\Doljno\src\app\styles\fonts.scss", "SCSS", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\app\styles\globals.scss", "SCSS", 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 83
+"d:\Doljno\src\app\styles\helpers\constants.scss", "SCSS", 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"d:\Doljno\src\app\styles\helpers\functions.scss", "SCSS", 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 29
+"d:\Doljno\src\app\styles\helpers\index.scss", "SCSS", 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"d:\Doljno\src\app\styles\helpers\media.scss", "SCSS", 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 68
+"d:\Doljno\src\app\styles\helpers\mixins.scss", "SCSS", 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 80
+"d:\Doljno\src\app\styles\index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1, 6
+"d:\Doljno\src\app\styles\utils.scss", "SCSS", 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 37
+"d:\Doljno\src\app\styles\variables.scss", "SCSS", 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 59
+"d:\Doljno\src\features\create-order-form\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\features\create-order-form\model\placeholders.mock.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"d:\Doljno\src\features\create-order-form\ui\CreateOrderForm.scss", "SCSS", 0, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 76
+"d:\Doljno\src\features\create-order-form\ui\CreateOrderForm.tsx", "TypeScript JSX", 0, 0, 103, 0, 0, 0, 0, 0, 0, 0, 0, 12, 115
+"d:\Doljno\src\features\review-slider\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\features\review-slider\model\reviews.mock.ts", "TypeScript", 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 2, 31
+"d:\Doljno\src\features\review-slider\ui\ReviewSlider.scss", "SCSS", 0, 81, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 94
+"d:\Doljno\src\features\review-slider\ui\ReviewSlider.tsx", "TypeScript JSX", 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 7, 65
+"d:\Doljno\src\index.scss", "SCSS", 0, 52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 63
+"d:\Doljno\src\main.tsx", "TypeScript JSX", 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11
+"d:\Doljno\src\shared\lib\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"d:\Doljno\src\shared\lib\useMobileMenu.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 6, 21
+"d:\Doljno\src\shared\lib\useOrderFormNavigation.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"d:\Doljno\src\shared\lib\useReducedMotion.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"d:\Doljno\src\shared\ui\Button\Button.scss", "SCSS", 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 47
+"d:\Doljno\src\shared\ui\Button\Button.tsx", "TypeScript JSX", 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 3, 17
+"d:\Doljno\src\shared\ui\Button\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\shared\ui\Logo\Logo.scss", "SCSS", 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 26
+"d:\Doljno\src\shared\ui\Logo\Logo.tsx", "TypeScript JSX", 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 3, 27
+"d:\Doljno\src\shared\ui\Logo\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\shared\ui\Section\Section.scss", "SCSS", 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 15
+"d:\Doljno\src\shared\ui\Section\Section.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 4, 27
+"d:\Doljno\src\shared\ui\Section\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"d:\Doljno\src\vite-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2
+"d:\Doljno\src\widgets\home\index.ts", "TypeScript", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"d:\Doljno\src\widgets\home\model\content.mock.ts", "TypeScript", 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 4, 53
+"d:\Doljno\src\widgets\home\ui\HomeHeader.scss", "SCSS", 0, 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 194
+"d:\Doljno\src\widgets\home\ui\HomeHeader.tsx", "TypeScript JSX", 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 6, 65
+"d:\Doljno\stylelint.config.mjs", "JavaScript", 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 1, 15
+"d:\Doljno\tsconfig.json", "JSON with Comments", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 24
+"d:\Doljno\vite.config.ts", "TypeScript", 0, 0, 0, 411, 0, 0, 0, 0, 0, 0, 49, 32, 492
+"Total", "-", 23, 1141, 466, 539, 44, 35, 19, 1588, 3, 12, 69, 792, 4731

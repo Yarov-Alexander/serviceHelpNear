@@ -28,7 +28,7 @@ export function RegisterPage() {
     const passwordsMismatch =
         debouncedConfirm !== '' && debouncedPassword !== debouncedConfirm;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (passwordsMismatch) {
