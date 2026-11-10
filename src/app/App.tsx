@@ -1,16 +1,11 @@
-import { HomePage } from "../pages/home";
-import { useOrderFormNavigation } from "../shared/lib";
-import { HomeFooter, HomeHeader } from "../widgets/home";
-import "../App.scss";
+import {router} from './poviders/router/router';
+import {RouterProvider} from "react-router";
 
 function App() {
-  const scrollToOrder = useOrderFormNavigation();
 
   return (
     <div id="top">
-      <HomeHeader onCreateOrder={scrollToOrder} />
-      <HomePage onCreateOrder={scrollToOrder} />
-      <HomeFooter />
+      <RouterProvider router={router} />
     </div>
   );
 }

@@ -1,20 +1,21 @@
 import classNames from "classnames";
-import { useMobileMenu } from "../../../../shared/lib";
-import { Button } from "../../../../shared/ui/Button";
-import { Logo } from "../../../../shared/ui/Logo";
+import { useMobileMenu } from "@/shared/lib";
+import { Button } from "@/shared/ui/Button";
+import { Logo } from "@/shared/ui/Logo";
 import { navItems } from "../../model/content.mock";
+import { useOrderFormNavigation } from "@/shared/lib/useOrderFormNavigation";
 import "./HomeHeader.scss";
+import { Link } from 'react-router';
+import { ROUTES } from "@/shared/config/routes";
 
-type HomeHeaderProps = {
-  onCreateOrder: () => void;
-};
 
-export function HomeHeader({ onCreateOrder }: HomeHeaderProps) {
+export function HomeHeader() {
   const { isOpen, toggle, close } = useMobileMenu();
+  const scrollToOrder = useOrderFormNavigation();
 
   const handleCreateOrder = () => {
     close();
-    onCreateOrder();
+    scrollToOrder();
   };
 
   return (
@@ -40,9 +41,12 @@ export function HomeHeader({ onCreateOrder }: HomeHeaderProps) {
         </div>
 
         <div className="header__actions">
-          <Button variant="secondary" className="header__login">
+          <Link 
+            to={ROUTES.login}
+            className={classNames("button", `button--secondary`, "header__login")}
+          >
             Войти
-          </Button>
+          </Link>
           <Button className="header__cta" onClick={handleCreateOrder}>
             Создать заказ
           </Button>

@@ -5,13 +5,10 @@ import {
   HomeHowItWorks,
   HomePerformers,
   HomeReviews,
-} from "../../../widgets/home";
+} from "@/widgets/home";
 
-type HomePageProps = {
-  onCreateOrder: () => void;
-};
 
-export function HomePage({ onCreateOrder }: HomePageProps) {
+export function HomePage() {
   return (
     <main>
       <HomeHero />
@@ -19,7 +16,7 @@ export function HomePage({ onCreateOrder }: HomePageProps) {
       <HomePerformers />
       <HomeReviews />
       <HomeFAQ />
-      <HomeFinalCTA onCreateOrder={onCreateOrder} />
+      <HomeFinalCTA />
     </main>
   );
 }
