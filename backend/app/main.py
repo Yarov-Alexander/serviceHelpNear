@@ -1,12 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(
-    title="My Service API",
-    description="Backend API for my service",
-    version="1.0.0",
+from app.core.config import settings
+from app.modules.auth.router import router as auth_router
+
+app = FastAPI(title="API")
+
+# Разрешаем фронтенду (другой порт = другой origin) обращаться к API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello from backend!"}
+# Каждый модуль подключается одной строкой. Добавил модуль orders: добавил include_router.
+app.include_router(auth_router)
