@@ -1,0 +1,42 @@
+.field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field__label {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.875rem;
+  font-weight: 540;
+}
+
+.field__input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 540;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &:focus,
+  &:focus-visible {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(255 140 0 / 25%);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--color-accent);
+  }
+}
+
+.field__error {
+  color: var(--color-error, #d93025);
+  font-size: 0.875rem;
+}

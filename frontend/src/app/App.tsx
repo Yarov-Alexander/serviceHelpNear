@@ -1,11 +1,13 @@
-import {router} from './poviders/router/router';
-import {RouterProvider} from "react-router";
+import { RouterProvider } from "react-router";
+import { AuthProvider } from "@/app/providers/AuthProvider";
+import { router } from "@/app/providers/router/router";
 
 function App() {
-
   return (
     <div id="top">
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </div>
   );
 }

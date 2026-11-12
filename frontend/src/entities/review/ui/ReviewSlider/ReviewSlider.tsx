@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { reviews } from "../model/reviews.mock";
-import { useReducedMotion } from "../../../shared/lib";
+import { useReducedMotion } from "@/shared/lib";
+import { reviews } from "../../model/reviews.mock";
 import "./ReviewSlider.scss";
 
 export function ReviewSlider() {

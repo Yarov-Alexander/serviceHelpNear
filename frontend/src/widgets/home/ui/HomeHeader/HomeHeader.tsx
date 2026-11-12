@@ -3,10 +3,10 @@ import { useMobileMenu } from "@/shared/lib";
 import { Button } from "@/shared/ui/Button";
 import { Logo } from "@/shared/ui/Logo";
 import { navItems } from "../../model/content.mock";
-import { useOrderFormNavigation } from "@/shared/lib/useOrderFormNavigation";
+import { useOrderFormNavigation } from "@/features/create-order-form";
 import "./HomeHeader.scss";
 import { Link } from 'react-router';
-import { ROUTES } from "@/shared/config/routes";
+import { ROUTES } from "@/shared/config";
 
 
 export function HomeHeader() {

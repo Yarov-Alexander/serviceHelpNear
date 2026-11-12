@@ -1,4 +1,4 @@
-import { useOrderFormNavigation } from "@/shared/lib/useOrderFormNavigation";
+import { useOrderFormNavigation } from "@/features/create-order-form";
 import { Button } from "../../../../shared/ui/Button";
 import "./HomeFinalCTA.scss";
 

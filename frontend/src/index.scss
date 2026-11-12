@@ -14,10 +14,6 @@ html {
 body {
   min-width: 320px;
   margin: 0;
-  color: var(--color-text);
-  background: var(--color-bg);
-  font-family: var(--font-body);
-  line-height: 1.5;
   font-synthesis: none;
 }
 
@@ -31,18 +27,9 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-a {
-  color: inherit;
-}
-
 img {
   display: block;
   max-width: 100%;
-}
-
-:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: 3px;
 }
 
 ::selection {

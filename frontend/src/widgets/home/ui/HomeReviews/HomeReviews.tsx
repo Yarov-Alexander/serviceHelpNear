@@ -1,4 +1,4 @@
-import { ReviewSlider } from "../../../../features/review-slider";
+import { ReviewSlider } from "@/entities/review";
 import { Section } from "../../../../shared/ui/Section";
 import "./HomeReviews.scss";
 
