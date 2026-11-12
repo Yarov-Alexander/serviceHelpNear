@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { ApiError } from "@/shared/api";
 import { Field } from "@/shared/ui/Field";
