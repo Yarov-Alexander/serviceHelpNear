@@ -1,4 +1,3 @@
-// shared/api/client.ts
 import { tokenStorage } from './tokenStorage';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
@@ -6,6 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
+    this.name = "ApiError";
   }
 }
 
@@ -23,7 +23,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    // FastAPI: detail — строка (твои HTTPException) или массив (422 валидация)
     const message = typeof body?.detail === 'string' ? body.detail : 'Ошибка запроса';
     throw new ApiError(res.status, message);
   }

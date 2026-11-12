@@ -30,6 +30,15 @@ export function RegisterForm() {
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (
+      values.password.length < REGISTER_VALIDATION.password.minLength ||
+      values.password.length > REGISTER_VALIDATION.password.maxLength
+    ) {
+      setError(
+        `Пароль должен содержать от ${REGISTER_VALIDATION.password.minLength} до ${REGISTER_VALIDATION.password.maxLength} символов`,
+      );
+      return;
+    }
     if (values.password !== values.confirmPassword) {
       setError("Пароли не совпадают");
       return;

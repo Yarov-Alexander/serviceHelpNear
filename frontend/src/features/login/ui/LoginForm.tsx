@@ -22,6 +22,11 @@ export function LoginForm() {
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (values.password.length < LOGIN_VALIDATION.password.minLength) {
+      setError(`Пароль должен содержать не менее ${LOGIN_VALIDATION.password.minLength} символов`);
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
