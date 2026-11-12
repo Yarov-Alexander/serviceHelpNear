@@ -1,3 +1,3 @@
 export { getMe } from "./api/getMe";
-export { clearUser, setUser, useUser } from "./model/useUser";
+export { useUserStore } from "./model/userStore";
 export type { User, UserRole } from "./model/types";

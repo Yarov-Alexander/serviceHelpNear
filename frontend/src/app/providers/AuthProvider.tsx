@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { clearUser, getMe, setUser } from "@/entities/user";
+import { getMe, useUserStore } from "@/entities/user";
 import { ApiError, tokenStorage } from "@/shared/api";
 
 type AuthProviderProps = {
@@ -7,6 +7,8 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const clearUser = useUserStore((state) => state.clearUser);
+  const setUser = useUserStore((state) => state.setUser);
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");

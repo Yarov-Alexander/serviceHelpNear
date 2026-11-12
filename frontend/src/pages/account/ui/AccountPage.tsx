@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
-import { clearUser, useUser } from "@/entities/user";
+import { useUserStore } from "@/entities/user";
 import { tokenStorage } from "@/shared/api";
 import { ROUTES } from "@/shared/config";
 
 export function AccountPage() {
-  const user = useUser();
+  const user = useUserStore((state) => state.currentUser);
+  const clearUser = useUserStore((state) => state.clearUser);
   const navigate = useNavigate();
 
   if (!user) return null;

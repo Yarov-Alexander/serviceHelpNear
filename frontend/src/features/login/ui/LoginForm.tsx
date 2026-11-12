@@ -1,6 +1,6 @@
 import { useState, type SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { clearUser, getMe, setUser } from "@/entities/user";
+import { getMe, useUserStore } from "@/entities/user";
 import { ApiError, tokenStorage } from "@/shared/api";
 import { Field } from "@/shared/ui/Field";
 import { ROUTES } from "@/shared/config";
@@ -9,6 +9,8 @@ import { LOGIN_VALIDATION, type LoginRequest } from "../model/types";
 import "./LoginForm.scss";
 
 export function LoginForm() {
+  const setUser = useUserStore((state) => state.setUser);
+  const clearUser = useUserStore((state) => state.clearUser);
   const navigate = useNavigate();
   const location = useLocation();
   const [values, setValues] = useState<LoginRequest>({ email: "", password: "" });

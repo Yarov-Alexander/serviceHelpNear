@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
-import { useUser } from "@/entities/user";
+import { useUserStore } from "@/entities/user";
 import { ROUTES } from "@/shared/config";
 
 type ProtectedRouteProps = {
@@ -8,7 +8,7 @@ type ProtectedRouteProps = {
 };
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const user = useUser();
+  const user = useUserStore((state) => state.currentUser);
   const location = useLocation();
 
   if (!user) {
