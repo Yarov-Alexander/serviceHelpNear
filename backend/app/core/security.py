@@ -27,7 +27,7 @@ def create_access_token(user_id: int) -> str:
         minutes=settings.access_token_expire_minutes
     )
     # sub (subject) по стандарту JWT: чей это токен. Должен быть строкой.
-    payload = {"sub": str(user_id), "exp": expire}
+    payload = {"sub": str(user_id), "exp": expire, "type": "access"}
     return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
 
 
@@ -36,4 +36,6 @@ def decode_access_token(token: str) -> int:
     payload = jwt.decode(
         token, settings.secret_key, algorithms=[settings.jwt_algorithm]
     )
+    if payload.get("type") != "access":
+        raise jwt.InvalidTokenError("Not an access token")
     return int(payload["sub"])

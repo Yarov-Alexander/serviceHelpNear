@@ -3,13 +3,14 @@ import "./Logo.scss";
 
 type LogoProps = {
   variant?: "default" | "inverted";
+  href?: string;
 };
 
-export function Logo({ variant = "default" }: LogoProps) {
+export function Logo({ variant = "default", href = "#top" }: LogoProps) {
   return (
     <a
       className={classNames("logo", variant === "inverted" && "logo--inverted")}
-      href="#top"
+      href={href}
       aria-label="Помощь рядом — на главную"
     >
       <svg viewBox="0 0 42 36" aria-hidden="true">

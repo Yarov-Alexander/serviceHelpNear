@@ -11,6 +11,7 @@ type RegisterValues = {
   email: string;
   password: string;
   confirmPassword: string;
+  role: "customer" | "executor";
 };
 
 export function RegisterForm() {
@@ -19,6 +20,7 @@ export function RegisterForm() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "customer",
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +52,7 @@ export function RegisterForm() {
       await register({
         email: values.email,
         password: values.password,
-        role: "customer",
+        role: values.role,
       });
       navigate(ROUTES.login, { replace: true });
     } catch (requestError) {
@@ -98,6 +100,23 @@ export function RegisterForm() {
           onChange={(event) => update("confirmPassword", event.target.value)}
           required={REGISTER_VALIDATION.confirmPassword.required}
         />
+        <label className="register__role-label" htmlFor="register-role">
+          Тип аккаунта
+          <select
+            id="register-role"
+            className="register__role"
+            value={values.role}
+            onChange={(event) => {
+              const role = event.target.value;
+              if (role === "customer" || role === "executor") {
+                setValues((current) => ({ ...current, role }));
+              }
+            }}
+          >
+            <option value="customer">Заказчик</option>
+            <option value="executor">Исполнитель</option>
+          </select>
+        </label>
         {error && <p className="register__error" role="alert">{error}</p>}
         <button type="submit" className="register__submit" disabled={isSubmitting}>
           {isSubmitting ? "Регистрируем..." : "Зарегистрироваться"}

@@ -1,0 +1,222 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  font-family: var(--font-body);
+  color: var(--color-text);
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-accent-soft, #ff8f6b);
+  }
+
+  &__who {
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--color-button-black);
+    overflow-wrap: anywhere;
+  }
+
+  &__email {
+    margin: 4px 0 0;
+    font-size: 0.92rem;
+    color: var(--color-button-black);
+    overflow-wrap: anywhere;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+
+    > div {
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      background: var(--color-card);
+    }
+
+    dt {
+      font-size: 0.78rem;
+      line-height: 1.3;
+      color: var(--color-muted);
+    }
+
+    dd {
+      margin: 6px 0 0;
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(30, 42, 58, 0.07);
+    align-self: flex-start;
+  }
+
+  &__tab {
+    padding: 9px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color var(--transition),
+      color var(--transition);
+
+    &:hover {
+      color: var(--color-accent-hover);
+    }
+
+    &.is-active {
+      background: var(--color-button-black);
+      color: var(--color-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+
+    /* пароли и поля, которым нужна вся ширина */
+    > :nth-child(3):nth-last-child(3),
+    > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    grid-column: 1 / -1;
+  }
+
+  &__submit {
+    padding: 15px 26px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--color-button-black);
+    color: var(--color-bg);
+    font-family: var(--font-body);
+    font-size: 0.97rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background-color var(--transition),
+      opacity var(--transition);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+  }
+
+  &__status {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  &__status-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-button-black);
+      padding: 3px;
+      box-sizing: content-box;
+      border-radius: 50%;
+      background: var(--color-mint);
+    }
+  }
+
+  &__status-error {
+    color: var(--color-accent-hover);
+  }
+
+  @media (max-width: 640px) {
+    gap: 16px;
+    padding: 16px;
+
+    &__card {
+      gap: 14px;
+      padding: 14px;
+    }
+
+    &__name {
+      font-size: 1.05rem;
+    }
+
+    &__stats {
+      gap: 8px;
+
+      > div {
+        padding: 12px;
+      }
+
+      dd {
+        font-size: 1.1rem;
+      }
+    }
+
+    &__form {
+      grid-template-columns: 1fr;
+    }
+
+    &__submit {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__tab,
+    &__submit {
+      transition: none;
+    }
+  }
+}

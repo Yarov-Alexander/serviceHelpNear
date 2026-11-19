@@ -1,0 +1,147 @@
+.next-help {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: clamp(20px, 2vw, 28px);
+  border-radius: var(--radius-lg);
+  background: var(--color-button-black);
+  color: var(--color-bg);
+
+  &__label {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-yellow);
+  }
+
+  &__time {
+    margin: 2px 0 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--color-bg);
+
+    &--empty {
+      font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
+    }
+  }
+
+  &__what {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    color: rgba(255, 247, 236, 0.78);
+  }
+
+  &__who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 14px;
+    font-size: 0.9rem;
+    color: var(--color-bg);
+
+    p {
+      margin: 0;
+    }
+
+    b {
+      font-weight: 600;
+    }
+
+    span {
+      color: rgba(255, 247, 236, 0.7);
+    }
+  }
+
+  &__avatar {
+    border: 2px solid var(--color-mint);
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 11px 16px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--color-yellow);
+    color: var(--color-button-black);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--transition),
+      transform var(--transition);
+
+    svg {
+      display: block;
+      width: 15px;
+      height: 15px;
+    }
+
+    &:hover {
+      background: var(--color-accent);
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-bg);
+      outline-offset: 3px;
+    }
+  }
+
+  /* пустое состояние: та же карточка, но с пунктирной рамкой */
+  &--empty {
+    position: relative;
+    justify-content: center;
+
+    &::before {
+      position: absolute;
+      inset: 10px;
+      border: 1.5px dashed rgba(255, 247, 236, 0.28);
+      border-radius: calc(var(--radius-lg) - 8px);
+      content: "";
+      pointer-events: none;
+    }
+  }
+
+  &__empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(255, 247, 236, 0.1);
+    color: var(--color-yellow);
+
+    svg {
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  @media (any-hover: none) {
+    &__action:active {
+      transform: none;
+      background: var(--color-accent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__action {
+      transition: none;
+    }
+  }
+}

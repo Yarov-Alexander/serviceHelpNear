@@ -1,0 +1,15 @@
+.account {
+  padding: 40px 0 var(--section-space);
+
+  &__container { width: min(var(--container), 100% - 32px); margin-inline: auto; display: grid; gap: 32px; }
+  &__head {
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;
+    padding: 24px; background: var(--color-card); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    border-left: 8px solid var(--color-accent);
+  }
+  &__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: clamp(1.5rem, 4vw, 2.25rem); }
+  &__who { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--color-muted); overflow-wrap: anywhere; }
+  &__role { padding: 2px 12px; border-radius: 999px; background: var(--color-mint); color: var(--color-text); font-weight: 600; }
+  &__note { margin: 0 auto; width: min(var(--container), 100% - 32px); color: var(--color-muted); }
+}

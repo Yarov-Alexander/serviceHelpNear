@@ -51,6 +51,15 @@
   }
 }
 
+.login__demo {
+  width: 100%;
+  margin: 1rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 .login__register-link {
   margin-top: 1.5rem;
   color: rgb(91, 132, 204);

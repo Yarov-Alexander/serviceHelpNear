@@ -7,7 +7,6 @@ import {
   HomeReviews,
 } from "@/widgets/home";
 
-
 export function HomePage() {
   return (
     <main>

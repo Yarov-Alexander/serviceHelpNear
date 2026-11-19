@@ -1,13 +1,17 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { api, ApiError } from "@/shared/api";
+import { useUserStore } from "@/entities/user";
+import { api, ApiError, tokenStorage } from "@/shared/api";
 import { LoginForm } from "./LoginForm";
 
 describe("LoginForm", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
     localStorage.clear();
+    useUserStore.getState().clearUser();
   });
 
   it("blocks a password shorter than eight characters", async () => {
@@ -16,7 +20,10 @@ describe("LoginForm", () => {
 
     render(
       <MemoryRouter>
-        <LoginForm />
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/account" element={<p>Аккаунт открыт</p>} />
+        </Routes>
       </MemoryRouter>,
     );
 
@@ -53,5 +60,36 @@ describe("LoginForm", () => {
       password: "valid-pass-123",
     });
     await waitFor(() => expect(screen.getByRole("button", { name: "Войти" })).toBeEnabled());
+  });
+
+  it("stores the returned access token in memory and opens the account", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(api, "post").mockResolvedValueOnce({ access_token: "login-access-token" });
+    vi.spyOn(api, "get").mockResolvedValueOnce({
+      id: 3,
+      email: "person@example.com",
+      role: "customer",
+    });
+
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/account" element={<p>Аккаунт открыт</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText("Введите email"), "person@example.com");
+    await user.type(screen.getByLabelText("Введите пароль"), "valid-pass-123");
+    await user.click(screen.getByRole("button", { name: "Войти" }));
+
+    expect(await screen.findByText("Аккаунт открыт")).toBeInTheDocument();
+    expect(tokenStorage.get()).toBe("login-access-token");
+    expect(useUserStore.getState().currentUser).toEqual({
+      id: 3,
+      email: "person@example.com",
+      role: "customer",
+    });
   });
 });

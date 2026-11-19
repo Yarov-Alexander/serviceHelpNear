@@ -77,4 +77,27 @@ describe("RegisterForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Пароли не совпадают");
     expect(post).not.toHaveBeenCalled();
   });
+
+  it("allows registering as an executor", async () => {
+    const user = userEvent.setup();
+    const post = vi.spyOn(api, "post").mockResolvedValueOnce({});
+
+    render(
+      <MemoryRouter>
+        <RegisterForm />
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText("Введите email"), "helper@example.com");
+    await user.type(screen.getByLabelText("Введите пароль"), "valid-pass-123");
+    await user.type(screen.getByLabelText("Повторите пароль"), "valid-pass-123");
+    await user.selectOptions(screen.getByLabelText("Тип аккаунта"), "executor");
+    await user.click(screen.getByRole("button", { name: "Зарегистрироваться" }));
+
+    expect(post).toHaveBeenCalledWith("/auth/register", {
+      email: "helper@example.com",
+      password: "valid-pass-123",
+      role: "executor",
+    });
+  });
 });

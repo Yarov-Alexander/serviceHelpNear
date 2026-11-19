@@ -4,21 +4,23 @@ import { useReducedMotion } from "../../../shared/lib";
 import { taskPlaceholders } from "../model/placeholders.mock";
 import "./CreateOrderForm.scss";
 
-type FormValues = {
+export type CreateOrderValues = {
   task: string;
   price: string;
   city: string;
 };
 
 type CreateOrderFormProps = {
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: CreateOrderValues) => void | Promise<void>;
 };
 
 export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
   const reducedMotion = useReducedMotion();
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [values, setValues] = useState<FormValues>({ task: "", price: "", city: "" });
-  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
+  const [values, setValues] = useState<CreateOrderValues>({ task: "", price: "", city: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof CreateOrderValues, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -28,21 +30,39 @@ export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
     return () => window.clearInterval(timer);
   }, [reducedMotion]);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const nextErrors: typeof errors = {};
-    if (!values.task.trim()) nextErrors.task = "Опишите задачу хотя бы парой слов";
+    if (values.task.trim().length < 2)
+      nextErrors.task = "Опишите задачу хотя бы парой слов";
     if (!values.city.trim()) nextErrors.city = "Укажите город";
-    if (!values.price || Number(values.price) <= 0)
-      nextErrors.price = "Цена должна быть больше нуля";
+    if (!Number.isSafeInteger(Number(values.price)) || Number(values.price) <= 0)
+      nextErrors.price = "Укажите целую сумму больше нуля";
     setErrors(nextErrors);
+    setSubmitError("");
 
-    if (Object.keys(nextErrors).length === 0) onSubmit(values);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit({
+        task: values.task.trim(),
+        price: values.price,
+        city: values.city.trim(),
+      });
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Не удалось создать заявку. Попробуйте ещё раз.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const update = (field: keyof FormValues, value: string) => {
+  const update = (field: keyof CreateOrderValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
+    setSubmitError("");
   };
 
   return (
@@ -72,6 +92,7 @@ export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
               id="price"
               type="number"
               min="1"
+              step="1"
               inputMode="numeric"
               value={values.price}
               onChange={(event) => update("price", event.target.value)}
@@ -106,8 +127,9 @@ export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
         </div>
       </div>
 
-      <Button type="submit" className="create-order-form__submit">
-        Создать заказ
+      {submitError && <p className="create-order-form__error" role="alert">{submitError}</p>}
+      <Button type="submit" className="create-order-form__submit" disabled={isSubmitting}>
+        {isSubmitting ? "Создаём заявку…" : "Создать заявку"}
       </Button>
     </form>
   );

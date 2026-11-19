@@ -15,7 +15,7 @@ describe("api client", () => {
     vi.unstubAllGlobals();
   });
 
-  it("sends the stored token as a bearer authorization header", async () => {
+  it("sends the in-memory token and includes cookies", async () => {
     tokenStorage.set("saved-token");
     fetchMock.mockResolvedValueOnce(
       new Response(JSON.stringify({ id: 1 }), {
@@ -26,15 +26,11 @@ describe("api client", () => {
 
     await api.get<{ id: number }>("/auth/me");
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      "http://localhost:8000/auth/me",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: "Bearer saved-token",
-          "Content-Type": "application/json",
-        }),
-      }),
-    );
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toBe("http://localhost:8000/auth/me");
+    const headers = new Headers(options?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer saved-token");
+    expect(options?.credentials).toBe("include");
   });
 
   it("throws ApiError with the HTTP status and API detail", async () => {
@@ -52,5 +48,35 @@ describe("api client", () => {
       status: 401,
       message: "Неверный email или пароль",
     });
+  });
+
+  it("refreshes an expired access token once and retries the request", async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ detail: "Недействительный токен" }), { status: 401 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access_token: "new-access-token" }), { status: 200 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: 1 }), { status: 200 }),
+      );
+    tokenStorage.set("expired-access-token");
+
+    await expect(api.get<{ id: number }>("/auth/me")).resolves.toEqual({ id: 1 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[1][0]).toBe("http://localhost:8000/auth/refresh");
+    expect(fetchMock.mock.calls[0][0]).toBe("http://localhost:8000/auth/me");
+    expect(tokenStorage.get()).toBe("new-access-token");
+    expect(new Headers(fetchMock.mock.calls[2][1]?.headers).get("Authorization")).toBe(
+      "Bearer new-access-token",
+    );
+  });
+
+  it("accepts successful no-content API responses", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    await expect(api.post("/auth/logout")).resolves.toBeUndefined();
   });
 });

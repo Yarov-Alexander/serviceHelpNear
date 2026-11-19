@@ -3,7 +3,6 @@ import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import (
-    create_access_token,
     decode_access_token,
     hash_password,
     verify_password,
@@ -31,13 +30,13 @@ async def register(session: AsyncSession, data: RegisterRequest) -> User:
     )
 
 
-async def login(session: AsyncSession, data: LoginRequest) -> str:
+async def login(session: AsyncSession, data: LoginRequest) -> User:
     user = await users_service.get_by_email(session, data.email.lower())
     
     if user is None or not verify_password(data.password, user.hashed_password):
         raise InvalidCredentialsError()
 
-    return create_access_token(user.id)
+    return user
 
 
 async def get_user_by_token(session: AsyncSession, token: str) -> User:

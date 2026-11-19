@@ -33,11 +33,11 @@ export function LoginForm() {
     setError("");
 
     try {
+      const destination = (location.state as { from?: { pathname?: string } } | null)?.from
+        ?.pathname;
       const token = await login(values);
       tokenStorage.set(token.access_token);
       setUser(await getMe());
-      const destination = (location.state as { from?: { pathname?: string } } | null)?.from
-        ?.pathname;
       navigate(destination ?? ROUTES.account, { replace: true });
     } catch (requestError) {
       tokenStorage.clear();

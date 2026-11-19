@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { getMe, useUserStore } from "@/entities/user";
-import { ApiError, tokenStorage } from "@/shared/api";
+import { ApiError, api, tokenStorage } from "@/shared/api";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -15,30 +15,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     let active = true;
-    const token = tokenStorage.get();
-
-    if (!token) {
-      clearUser();
-      setError("");
-      setStatus("ready");
-      return () => {
-        active = false;
-      };
-    }
-
     setStatus("loading");
     setError("");
-    getMe()
-      .then((user) => {
+
+    const restoreSession = async () => {
+      try {
+        await api.refreshSession();
+        if (!active) return;
+        const user = await getMe();
         if (!active) return;
         setUser(user);
         setStatus("ready");
-      })
-      .catch((requestError: unknown) => {
+      } catch (requestError: unknown) {
         if (!active) return;
+        tokenStorage.clear();
+        clearUser();
         if (requestError instanceof ApiError && requestError.status === 401) {
-          tokenStorage.clear();
-          clearUser();
+          setError("");
           setStatus("ready");
           return;
         }
@@ -48,12 +41,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
             : "Не удалось восстановить сессию.",
         );
         setStatus("error");
-      });
+      }
+    };
 
+    void restoreSession();
     return () => {
       active = false;
     };
-  }, [attempt]);
+  }, [attempt, clearUser, setUser]);
 
   if (status === "loading") {
     return <p role="status">Восстанавливаем сессию...</p>;

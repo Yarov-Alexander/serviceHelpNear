@@ -1,0 +1,138 @@
+.footer-account {
+  margin-top: clamp(32px, 5vw, 64px);
+  padding-bottom: 26px;
+  font-family: var(--font-body);
+
+  &__container {
+    width: 100%;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 clamp(16px, 3vw, 32px);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: clamp(24px, 3.4vw, 48px);
+    border-radius: var(--radius-lg);
+    background: var(--color-button-black);
+    color: var(--color-bg);
+  }
+
+  &__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 56px);
+  }
+
+  &__about {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__text {
+    max-width: 38ch;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgba(255, 247, 236, 0.74);
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-yellow);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-bg);
+    font: inherit;
+    font-size: 0.97rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--color-yellow);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-yellow);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+  }
+
+  &__badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  &__copy {
+    margin: 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 247, 236, 0.16);
+    font-size: 0.85rem;
+    color: rgba(255, 247, 236, 0.6);
+  }
+
+  @media (max-width: 860px) {
+    &__top {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &__about {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding-bottom: 18px;
+
+    &__top {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__link {
+      transition: none;
+    }
+  }
+}

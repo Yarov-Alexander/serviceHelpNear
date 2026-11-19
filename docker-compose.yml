@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: servicehelp
+      POSTGRES_USER: servicehelp
+      POSTGRES_PASSWORD: servicehelp
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U servicehelp -d servicehelp"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://servicehelp:servicehelp@db:5432/servicehelp
+      SECRET_KEY: ${SECRET_KEY:-}
+      REDIS_URL: redis://redis:6379/0
+      REFRESH_COOKIE_SECURE: "false"
+      CORS_ORIGINS: '["http://localhost:5173"]'
+    ports:
+      - "8000:8000"
+    volumes:
+      - api-secret:/run/secrets
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/openapi.json')",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      PORT: "5173"
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api-secret:
+  postgres-data:
+  redis-data:
