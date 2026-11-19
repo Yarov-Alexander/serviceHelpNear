@@ -73,17 +73,17 @@ def _is_legacy_create_all_schema(connection: sa.Connection) -> bool:
         )
 
     for table_name, expected_columns in LEGACY_COLUMNS.items():
-            actual_columns = {
-                column["name"] for column in inspector.get_columns(table_name)
-            }
+        actual_columns = {
+            column["name"] for column in inspector.get_columns(table_name)
+        }
         actual_indexes = {
             index["name"] for index in inspector.get_indexes(table_name)
         }
         expected_indexes = LEGACY_INDEXES[table_name]
-            if (
-                actual_columns != expected_columns
-                or not expected_indexes <= actual_indexes
-            ):
+        if (
+            actual_columns != expected_columns
+            or not expected_indexes <= actual_indexes
+        ):
             raise RuntimeError(
                 f"Existing table {table_name!r} does not match the known "
                 "pre-Alembic schema; refusing to stamp it automatically."
