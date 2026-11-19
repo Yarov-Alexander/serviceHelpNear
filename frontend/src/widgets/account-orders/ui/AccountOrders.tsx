@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import type { UserRole } from "@/entities/user";
 import type { Order } from "@/entities/order";
 import { IconMessage, IconPlus } from "@/shared/ui/Icons";
@@ -11,7 +11,11 @@ interface AccountOrdersProps {
   availableOrders: Order[];
   loading: boolean;
   error: string;
+  availableHasMore: boolean;
+  loadingMoreAvailable: boolean;
   onAccept: (orderId: number) => Promise<void>;
+  onSearchAvailableCity: (city: string) => void;
+  onLoadMoreAvailable: () => void;
   onCreateRequest: () => void;
   onOpenMessages: () => void;
 }
@@ -30,13 +34,18 @@ export function AccountOrders({
   availableOrders,
   loading,
   error,
+  availableHasMore,
+  loadingMoreAvailable,
   onAccept,
+  onSearchAvailableCity,
+  onLoadMoreAvailable,
   onCreateRequest,
   onOpenMessages,
 }: AccountOrdersProps) {
   const [acceptingId, setAcceptingId] = useState<number | null>(null);
   const [acceptError, setAcceptError] = useState("");
   const [filter, setFilter] = useState<OrderFilter>("all");
+  const [city, setCity] = useState("");
 
   const accept = async (orderId: number) => {
     setAcceptingId(orderId);
@@ -150,6 +159,23 @@ export function AccountOrders({
               <h2 className="account-orders__title" id="available-orders-title">
                 Открытые заказы
               </h2>
+              <form
+                className="account-orders__city-filter"
+                onSubmit={(event: FormEvent<HTMLFormElement>) => {
+                  event.preventDefault();
+                  onSearchAvailableCity(city);
+                }}
+              >
+                <label htmlFor="available-orders-city">Город</label>
+                <input
+                  id="available-orders-city"
+                  value={city}
+                  maxLength={100}
+                  onChange={(event) => setCity(event.target.value)}
+                  placeholder="Например, Томск"
+                />
+                <button type="submit">Найти</button>
+              </form>
               {!loading && !error && availableOrders.length === 0 && (
                 <p className="account-orders__note">Свободных заказов пока нет.</p>
               )}
@@ -163,6 +189,16 @@ export function AccountOrders({
                   />
                 ))}
               </div>
+              {availableHasMore && (
+                <button
+                  type="button"
+                  className="account-orders__load-more"
+                  onClick={onLoadMoreAvailable}
+                  disabled={loadingMoreAvailable}
+                >
+                  {loadingMoreAvailable ? "Загружаем…" : "Показать ещё"}
+                </button>
+              )}
             </section>
           )}
         </div>

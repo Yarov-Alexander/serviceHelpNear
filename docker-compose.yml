@@ -62,11 +62,10 @@ services:
   frontend:
     build:
       context: ./frontend
-    environment:
-      PORT: "5173"
-      VITE_API_URL: http://localhost:8000
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       api:
         condition: service_healthy

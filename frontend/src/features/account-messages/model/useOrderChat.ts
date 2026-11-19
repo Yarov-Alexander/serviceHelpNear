@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, getWebSocketUrl, tokenStorage } from "@/shared/api";
 import type { ChatMessage, ChatMessageDto } from "./types";
 
+const CHAT_PAGE_SIZE = 50;
+
 function mapMessage(message: ChatMessageDto, currentUserId: number): ChatMessage {
   return {
     id: String(message.id),
@@ -23,11 +25,15 @@ export function useOrderChat(
 ) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasOlderMessages, setHasOlderMessages] = useState(false);
+  const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
+  const activeOrderIdRef = useRef<string | null>(null);
 
   useEffect(() => {
+    activeOrderIdRef.current = orderId;
     if (!orderId) return;
 
     let active = true;
@@ -36,14 +42,17 @@ export function useOrderChat(
     setConnected(false);
     setError("");
     setMessages([]);
+    setHasOlderMessages(false);
+    setLoadingOlderMessages(false);
 
     const connect = async () => {
       try {
         const history = await api.get<ChatMessageDto[]>(
-          `/chat/orders/${encodeURIComponent(orderId)}/messages`,
+          `/chat/orders/${encodeURIComponent(orderId)}/messages?limit=${CHAT_PAGE_SIZE}`,
         );
         if (!active) return;
         setMessages(history.map((message) => mapMessage(message, currentUserId)));
+        setHasOlderMessages(history.length === CHAT_PAGE_SIZE);
 
         await api.post(`/chat/orders/${encodeURIComponent(orderId)}/read`);
         if (!active) return;
@@ -138,10 +147,40 @@ export function useOrderChat(
     void connect();
     return () => {
       active = false;
+      if (activeOrderIdRef.current === orderId) activeOrderIdRef.current = null;
       socketRef.current = null;
       socket?.close();
     };
   }, [currentUserId, onRead, orderId]);
+
+  const loadOlderMessages = useCallback(async () => {
+    const firstMessage = messages[0];
+    if (!orderId || !firstMessage || !hasOlderMessages || loadingOlderMessages) return;
+    setLoadingOlderMessages(true);
+    try {
+      const older = await api.get<ChatMessageDto[]>(
+        `/chat/orders/${encodeURIComponent(orderId)}/messages?limit=${CHAT_PAGE_SIZE}&before_id=${encodeURIComponent(firstMessage.id)}`,
+      );
+      if (activeOrderIdRef.current !== orderId) return;
+      setMessages((current) => {
+        const existingIds = new Set(current.map((message) => message.id));
+        const olderMessages = older
+          .map((message) => mapMessage(message, currentUserId))
+          .filter((message) => !existingIds.has(message.id));
+        return [...olderMessages, ...current];
+      });
+      setHasOlderMessages(older.length === CHAT_PAGE_SIZE);
+    } catch (requestError) {
+      if (activeOrderIdRef.current !== orderId) return;
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Не удалось загрузить предыдущие сообщения.",
+      );
+    } finally {
+      if (activeOrderIdRef.current === orderId) setLoadingOlderMessages(false);
+    }
+  }, [currentUserId, hasOlderMessages, loadingOlderMessages, messages, orderId]);
 
   const sendMessage = useCallback((text: string) => {
     const socket = socketRef.current;
@@ -153,5 +192,14 @@ export function useOrderChat(
     setError("");
   }, []);
 
-  return { messages, loading, connected, error, sendMessage };
+  return {
+    messages,
+    loading,
+    connected,
+    error,
+    sendMessage,
+    hasOlderMessages,
+    loadingOlderMessages,
+    loadOlderMessages,
+  };
 }

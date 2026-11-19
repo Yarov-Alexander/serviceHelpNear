@@ -93,7 +93,11 @@ export function AccountPage() {
           availableOrders={orders.availableOrders}
           loading={orders.loading}
           error={orders.error}
+          availableHasMore={orders.availableHasMore}
+          loadingMoreAvailable={orders.loadingMoreAvailable}
           onAccept={acceptRequest}
+          onSearchAvailableCity={orders.searchAvailableCity}
+          onLoadMoreAvailable={() => void orders.loadMoreAvailable()}
           onCreateRequest={() => setIsCreateOrderOpen(true)}
           onOpenMessages={() => openModal("messages")}
         />

@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.modules.orders.models import OrderStatus
+
 
 class OrderCreate(BaseModel):
     task: str = Field(min_length=2, max_length=300)
@@ -34,5 +36,5 @@ class OrderRead(BaseModel):
     task: str
     price: int
     city: str
-    status: str
+    status: OrderStatus
     created_at: datetime

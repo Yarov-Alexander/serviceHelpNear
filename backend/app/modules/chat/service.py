@@ -73,18 +73,23 @@ async def mark_conversation_read(
 
 
 async def list_messages(
-    session: AsyncSession, order_id: int, user_id: int
+    session: AsyncSession,
+    order_id: int,
+    user_id: int,
+    limit: int = 50,
+    before_id: int | None = None,
 ) -> list[OrderMessage] | None:
     order = await get_order_for_chat(session, order_id, user_id)
     if order is None:
         return None
 
+    statement = select(OrderMessage).where(OrderMessage.order_id == order_id)
+    if before_id is not None:
+        statement = statement.where(OrderMessage.id < before_id)
     result = await session.scalars(
-        select(OrderMessage)
-        .where(OrderMessage.order_id == order_id)
-        .order_by(OrderMessage.created_at, OrderMessage.id)
+        statement.order_by(OrderMessage.id.desc()).limit(limit)
     )
-    return list(result)
+    return list(reversed(result.all()))
 
 
 async def create_message(

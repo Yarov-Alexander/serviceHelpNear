@@ -21,10 +21,12 @@
 - Создание заявок заказчиком с описанием работы, ценой и городом.
 - Просмотр собственных заявок.
 - Просмотр свободных заявок исполнителем.
+- Пагинация свободных заявок и фильтр по городу.
 - Принятие заявки исполнителем с защитой от повторного назначения.
 - Переписки и WebSocket-чат только для заказчика и исполнителя заявки.
 - История сообщений и отметка непрочитанных сообщений.
 - Автоматическое восстановление и обновление авторизованной сессии.
+- Миграции схемы базы данных через Alembic.
 
 ## Технологии
 
@@ -39,6 +41,7 @@
 - pwdlib / Argon2
 - WebSocket API
 - Pydantic
+- Alembic migrations
 
 ### Frontend
 
@@ -131,7 +134,13 @@ sequenceDiagram
 - Сам токен в Redis не сохраняется: используется SHA-256-хеш как ключ.
 - Срок хранения составляет 30 дней.
 - При обновлении используется ротация: старый ключ удаляется и создаётся новый.
-- Повторное использование старого refresh token отклоняется.
+- В течение 5 секунд параллельный запрос со старым refresh token получает access token,
+  чтобы одновременное обновление сессии в нескольких вкладках не приводило к выходу.
+- Cookie имеет `SameSite=Strict`, `HttpOnly` и ограничена путём `/auth`; флаг `Secure`
+  задаётся `REFRESH_COOKIE_SECURE`.
+
+Для защиты входа от перебора Redis ограничивает число неуспешных попыток с одного IP:
+5 попыток за 15 минут.
 
 ### Роли и права
 
@@ -139,7 +148,7 @@ sequenceDiagram
 - `executor` может просматривать свободные заявки и принимать их.
 - Заявки пользователя доступны через `/orders/mine`.
 - `/auth/me` возвращает текущего пользователя.
-- Администраторская роль предусмотрена моделью пользователя.
+- Роль `admin` хранится в модели пользователя; отдельные административные маршруты пока не реализованы.
 
 ## Основные API-маршруты
 
@@ -186,7 +195,7 @@ Content-Type: application/json
 |---|---|---|---|
 | `POST` | `/orders` | Заказчик | Создать заявку |
 | `GET` | `/orders/mine` | Любая авторизованная | Получить свои заявки |
-| `GET` | `/orders/available` | Исполнитель | Получить свободные заявки |
+| `GET` | `/orders/available?limit=20&offset=0&city=Томск` | Исполнитель | Получить страницу свободных заявок, при необходимости отфильтрованную по городу |
 | `POST` | `/orders/{order_id}/accept` | Исполнитель | Принять заявку |
 
 Пример создания заявки:
@@ -208,9 +217,9 @@ Content-Type: application/json
 | Метод | Маршрут | Назначение |
 |---|---|---|
 | `GET` | `/chat/conversations` | Список переписок пользователя |
-| `GET` | `/chat/orders/{order_id}/messages` | История сообщений заявки |
+| `GET` | `/chat/orders/{order_id}/messages?limit=50&before_id=123` | Страница истории сообщений; `before_id` загружает более старые сообщения |
 | `POST` | `/chat/orders/{order_id}/read` | Отметить входящие сообщения прочитанными |
-| `WS` | `/chat/orders/{order_id}/ws` | Реальный-time переписка |
+| `WS` | `/chat/orders/{order_id}/ws` | Переписка в реальном времени |
 
 WebSocket-соединение сначала должно получить событие авторизации:
 
@@ -231,59 +240,8 @@ WebSocket-соединение сначала должно получить со
 }
 ```
 
-Каждое новое сообщение сохраняется в PostgreSQL и одновременно рассылается всем активным
-подключениям заявки через `ConnectionManager`.
-
-## Работа с PostgreSQL через SQLAlchemy
-
-Проект использует асинхронный SQLAlchemy. Для каждого HTTP-запроса создаётся отдельная сессия:
-
-```python
-async with SessionLocal() as session:
-    ...
-```
-
-FastAPI внедряет сессию через зависимость `get_session`. Изменения сохраняются явно:
-
-```python
-session.add(order)
-await session.commit()
-await session.refresh(order)
-```
-
-Запросы используют выражения SQLAlchemy Core:
-
-```python
-select(Order).where(Order.customer_id == customer_id)
-```
-
-Например, список доступных заявок комбинирует сразу два условия:
-
-```python
-select(Order).where(
-    Order.status == "open",
-    Order.executor_id.is_(None),
-)
-```
-
-`or_` используется в SQLAlchemy для логического «ИЛИ». В сервисе чата он выбирает заказы,
-где пользователь является либо заказчиком, либо исполнителем:
-
-```python
-or_(
-    Order.customer_id == user.id,
-    Order.executor_id == user.id,
-)
-```
-
-Такой запрос преобразуется примерно в SQL:
-
-```sql
-WHERE customer_id = :user_id OR executor_id = :user_id
-```
-
-Для пользователя с ролью `customer` это означает его созданные заявки, а для `executor` —
-заявки, которые он принял.
+Каждое новое сообщение сохраняется в PostgreSQL и публикуется в Redis Pub/Sub. Все API-воркеры
+подписаны на каналы чатов и доставляют событие подключённым к ним WebSocket-клиентам.
 
 Основные таблицы:
 
@@ -293,7 +251,13 @@ WHERE customer_id = :user_id OR executor_id = :user_id
 | `orders` | Заявки заказчиков |
 | `order_messages` | Сообщения чата |
 
-Таблицы создаются при запуске backend через `Base.metadata.create_all(...)`.
+Статус заявки хранится как PostgreSQL enum (`open`, `assigned`); для выборки свободных заказов
+есть составной индекс по `status` и `executor_id`, а история чата использует индекс
+`(order_id, created_at)`.
+
+Схема базы версионируется миграциями Alembic в `backend/migrations`. При старте Docker API
+выполняет `alembic upgrade head` до запуска приложения. В тестах SQLite-схема создаётся
+непосредственно из SQLAlchemy metadata.
 
 ## Frontend-хранилища
 
@@ -312,12 +276,13 @@ WHERE customer_id = :user_id OR executor_id = :user_id
 Из корня проекта:
 
 ```sh
+cp .env.example .env
 docker compose up --build
 ```
 
 После запуска:
 
-- Frontend: http://localhost:5173
+- Frontend: http://localhost:5173 (production build, Nginx)
 - API: http://localhost:8000
 - Swagger/OpenAPI: http://localhost:8000/docs
 - PostgreSQL: `localhost:5433`
@@ -341,7 +306,18 @@ docker compose up --build -d
 docker compose down -v
 ```
 
-PostgreSQL, Redis и секрет подписи хранятся в Docker volumes.
+PostgreSQL и Redis хранят данные в Docker volumes. Локальный пример переменных находится в
+`.env.example`; не используйте его тестовый `SECRET_KEY` в production.
+
+Для базы, созданной прежней версией приложения через `create_all`, перед первым запуском новой
+версии сделайте резервную копию и один раз отметьте базовую схему:
+
+```sh
+docker compose run --rm api alembic stamp 0001_initial
+```
+
+После этого обычный `docker compose up --build` применит последующие изменения схемы, не
+пересоздавая существующие таблицы. Для новой базы дополнительный шаг `stamp` не нужен.
 
 ## Переменные окружения API
 
@@ -367,11 +343,26 @@ cd backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 ```
 
 Для backend нужны работающие PostgreSQL и Redis и обязательные переменные
 `DATABASE_URL` и `SECRET_KEY`.
+
+В bash:
+
+```sh
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export DATABASE_URL=postgresql+asyncpg://servicehelp:servicehelp@localhost:5433/servicehelp
+export REDIS_URL=redis://localhost:6379/0
+export SECRET_KEY=replace-with-a-local-secret
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
 
 Frontend:
 
@@ -381,8 +372,17 @@ pnpm install
 pnpm dev
 ```
 
+В bash используйте те же команды:
+
+```sh
+cd frontend
+pnpm install
+pnpm dev
+```
+
 По умолчанию frontend обращается к API по адресу `http://localhost:8000`.
 Адрес можно переопределить переменной `VITE_API_URL`.
+Для Docker это build-argument, поэтому его нужно задать до сборки образа.
 
 ## Тестирование
 
@@ -392,6 +392,10 @@ Backend-тесты:
 cd backend
 python -m unittest discover -s tests -v
 ```
+
+Они проверяют refresh-ротацию токенов и grace-окно, лимит входа, cookie/logout, создание и
+принятие заявок, разграничение доступа к чату, Redis Pub/Sub между воркерами, непрочитанные
+сообщения, фильтр города и страницы заказов/истории сообщений.
 
 Frontend-тесты:
 
@@ -406,3 +410,5 @@ Frontend-сборка:
 cd frontend
 pnpm build
 ```
+
+GitHub Actions запускает backend-тесты, frontend-тесты и production-сборку при push и pull request.

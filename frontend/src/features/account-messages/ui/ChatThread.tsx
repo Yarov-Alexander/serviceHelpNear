@@ -12,6 +12,9 @@ interface ChatThreadProps {
   loading: boolean;
   connected: boolean;
   error: string;
+  hasOlderMessages: boolean;
+  loadingOlderMessages: boolean;
+  onLoadOlderMessages: () => void;
 }
 
 export function ChatThread({
@@ -21,15 +24,19 @@ export function ChatThread({
   loading,
   connected,
   error,
+  hasOlderMessages,
+  loadingOlderMessages,
+  onLoadOlderMessages,
 }: ChatThreadProps) {
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { participant, messages } = conversation;
 
+  const newestMessageId = messages[messages.length - 1]?.id;
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages.length]);
+  }, [newestMessageId]);
 
   const resize = () => {
     const el = textareaRef.current;
@@ -79,6 +86,16 @@ export function ChatThread({
           <p className="messages__connection">Подключаемся к чату…</p>
         )}
         {error && <p className="messages__error" role="alert">{error}</p>}
+        {hasOlderMessages && (
+          <button
+            type="button"
+            className="messages__load-older"
+            onClick={onLoadOlderMessages}
+            disabled={loadingOlderMessages}
+          >
+            {loadingOlderMessages ? "Загружаем…" : "Загрузить предыдущие сообщения"}
+          </button>
+        )}
         {messages.map((message) => (
           <div
             key={message.id}

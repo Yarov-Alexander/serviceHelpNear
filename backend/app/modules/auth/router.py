@@ -1,4 +1,12 @@
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Cookie,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +18,11 @@ from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.exceptions import (
     EmailAlreadyRegisteredError,
     InvalidCredentialsError,
+)
+from app.modules.auth.rate_limit import (
+    clear_failed_logins,
+    is_login_rate_limited,
+    record_failed_login,
 )
 from app.modules.auth.schemas import LoginRequest, RegisterRequest, TokenResponse
 from app.modules.auth.tokens import issue_tokens, revoke_refresh_token, rotate_refresh_token
@@ -56,16 +69,26 @@ async def register(data: RegisterRequest, session: AsyncSession = Depends(get_se
 @router.post("/login", response_model=TokenResponse)
 async def login(
     data: LoginRequest,
+    request: Request,
     response: Response,
     session: AsyncSession = Depends(get_session),
     redis: Redis = Depends(get_redis),
 ):
+    client_ip = request.client.host if request.client else "unknown"
+    if await is_login_rate_limited(redis, client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Слишком много попыток входа. Попробуйте позже.",
+            headers={"Retry-After": "900"},
+        )
     try:
         user = await service.login(session, data)
     except InvalidCredentialsError:
+        await record_failed_login(redis, client_ip)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Неверный email или пароль"
         )
+    await clear_failed_logins(redis, client_ip)
     access_token, refresh_token = await issue_tokens(redis, user.id)
     _set_refresh_cookie(response, refresh_token)
     return TokenResponse(access_token=access_token)
@@ -86,7 +109,8 @@ async def refresh(
         )
 
     _, access_token, new_refresh_token = rotated
-    _set_refresh_cookie(response, new_refresh_token)
+    if new_refresh_token is not None:
+        _set_refresh_cookie(response, new_refresh_token)
     return TokenResponse(access_token=access_token)
 
 

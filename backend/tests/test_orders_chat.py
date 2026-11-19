@@ -77,3 +77,75 @@ class OrdersAndChatTests(unittest.IsolatedAsyncioTestCase):
             )
             executor_conversations = await chat_service.list_conversations(session, executor)
             self.assertEqual(executor_conversations[0]["unread_count"], 0)
+
+    async def test_available_orders_support_city_filter_and_offset_pagination(self) -> None:
+        async with self.session_factory() as session:
+            customer = User(
+                email="customer@example.com",
+                hashed_password="hash",
+                role=UserRole.customer,
+            )
+            session.add(customer)
+            await session.commit()
+            await session.refresh(customer)
+
+            first = await order_service.create_order(
+                session, customer.id, "Task one", 100, "Томск"
+            )
+            second = await order_service.create_order(
+                session, customer.id, "Task two", 200, "Томск"
+            )
+            await order_service.create_order(
+                session, customer.id, "Task three", 300, "Москва"
+            )
+
+            page = await order_service.list_available_orders(
+                session, limit=1, offset=0, city="Томск"
+            )
+            next_page = await order_service.list_available_orders(
+                session, limit=1, offset=1, city="Томск"
+            )
+
+            self.assertEqual([order.id for order in page], [second.id])
+            self.assertEqual([order.id for order in next_page], [first.id])
+
+    async def test_chat_history_returns_latest_page_and_older_cursor(self) -> None:
+        async with self.session_factory() as session:
+            customer = User(
+                email="customer@example.com",
+                hashed_password="hash",
+                role=UserRole.customer,
+            )
+            executor = User(
+                email="executor@example.com",
+                hashed_password="hash",
+                role=UserRole.executor,
+            )
+            session.add_all([customer, executor])
+            await session.commit()
+            await session.refresh(customer)
+            await session.refresh(executor)
+            order = await order_service.create_order(
+                session, customer.id, "Task", 100, "Томск"
+            )
+            order = await order_service.accept_order(session, order.id, executor.id)
+            messages = [
+                await chat_service.create_message(
+                    session, order.id, customer.id, f"Message {index}"
+                )
+                for index in range(5)
+            ]
+
+            latest = await chat_service.list_messages(
+                session, order.id, customer.id, limit=2
+            )
+            older = await chat_service.list_messages(
+                session,
+                order.id,
+                customer.id,
+                limit=2,
+                before_id=latest[0].id,
+            )
+
+            self.assertEqual([message.id for message in latest], [messages[3].id, messages[4].id])
+            self.assertEqual([message.id for message in older], [messages[1].id, messages[2].id])

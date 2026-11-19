@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
@@ -39,10 +39,13 @@ async def my_orders(
 
 @router.get("/available", response_model=list[OrderRead])
 async def available_orders(
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    city: str | None = Query(default=None, min_length=1, max_length=100),
     session: AsyncSession = Depends(get_session),
     user: User = Depends(require_role(UserRole.executor)),
 ):
-    return await service.list_available_orders(session)
+    return await service.list_available_orders(session, limit, offset, city)
 
 
 @router.post("/{order_id}/accept", response_model=OrderRead)

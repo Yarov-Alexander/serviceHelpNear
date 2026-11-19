@@ -1,7 +1,17 @@
 import asyncio
+import json
 from collections import defaultdict
 
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+)
+from redis.asyncio import Redis
+from redis.asyncio.client import PubSub
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import SessionLocal, get_session
@@ -19,6 +29,39 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 class ConnectionManager:
     def __init__(self) -> None:
         self._connections: dict[int, set[WebSocket]] = defaultdict(set)
+        self._redis: Redis | None = None
+        self._pubsub: PubSub | None = None
+        self._listener: asyncio.Task[None] | None = None
+
+    async def start(self, redis: Redis) -> None:
+        self._redis = redis
+        self._pubsub = redis.pubsub()
+        await self._pubsub.psubscribe("chat:orders:*")
+        self._listener = asyncio.create_task(self._listen())
+
+    async def stop(self) -> None:
+        if self._listener is not None:
+            self._listener.cancel()
+            try:
+                await self._listener
+            except asyncio.CancelledError:
+                pass
+            self._listener = None
+        if self._pubsub is not None:
+            await self._pubsub.aclose()
+            self._pubsub = None
+        self._redis = None
+
+    async def _listen(self) -> None:
+        pubsub = self._pubsub
+        if pubsub is None:
+            raise RuntimeError("Chat Redis pub/sub is not running")
+        async for message in pubsub.listen():
+            if message["type"] != "pmessage":
+                continue
+            channel = message["channel"]
+            order_id = int(channel.rsplit(":", maxsplit=1)[-1])
+            await self.broadcast(order_id, json.loads(message["data"]))
 
     async def connect(self, order_id: int, websocket: WebSocket) -> None:
         self._connections[order_id].add(websocket)
@@ -41,6 +84,11 @@ class ConnectionManager:
         for connection in stale:
             await self.disconnect(order_id, connection)
 
+    async def publish(self, order_id: int, event: dict[str, object]) -> None:
+        if self._redis is None:
+            raise RuntimeError("Chat Redis pub/sub is not running")
+        await self._redis.publish(f"chat:orders:{order_id}", json.dumps(event))
+
 
 manager = ConnectionManager()
 
@@ -56,10 +104,12 @@ async def conversations(
 @router.get("/orders/{order_id}/messages", response_model=list[MessageRead])
 async def messages(
     order_id: int,
+    limit: int = Query(default=50, ge=1, le=100),
+    before_id: int | None = Query(default=None, ge=1),
     session: AsyncSession = Depends(get_session),
     user: User = Depends(get_current_user),
 ):
-    result = await service.list_messages(session, order_id, user.id)
+    result = await service.list_messages(session, order_id, user.id, limit, before_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Диалог не найден")
     return result
@@ -136,7 +186,7 @@ async def order_chat(websocket: WebSocket, order_id: int):
                 )
 
             serialized = MessageRead.model_validate(message).model_dump(mode="json")
-            await manager.broadcast(
+            await manager.publish(
                 order_id, {"type": "message", "message": serialized}
             )
     except asyncio.TimeoutError:

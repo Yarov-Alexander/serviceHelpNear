@@ -5,7 +5,7 @@ from app.modules.orders.exceptions import (
     OrderAlreadyAssignedError,
     OrderNotFoundError,
 )
-from app.modules.orders.models import Order
+from app.modules.orders.models import Order, OrderStatus
 
 
 async def get_order_for_chat(
@@ -50,11 +50,22 @@ async def list_executor_orders(session: AsyncSession, executor_id: int) -> list[
     return list(result)
 
 
-async def list_available_orders(session: AsyncSession) -> list[Order]:
+async def list_available_orders(
+    session: AsyncSession,
+    limit: int = 20,
+    offset: int = 0,
+    city: str | None = None,
+) -> list[Order]:
+    statement = select(Order).where(
+        Order.status == OrderStatus.open, Order.executor_id.is_(None)
+    )
+    if city is not None:
+        normalized_city = city.strip()
+        statement = statement.where(Order.city == normalized_city)
     result = await session.scalars(
-        select(Order)
-        .where(Order.status == "open", Order.executor_id.is_(None))
-        .order_by(Order.created_at.desc(), Order.id.desc())
+        statement.order_by(Order.created_at.desc(), Order.id.desc())
+        .offset(offset)
+        .limit(limit)
     )
     return list(result)
 
@@ -67,11 +78,11 @@ async def accept_order(
     )
     if order is None:
         raise OrderNotFoundError()
-    if order.status != "open" or order.executor_id is not None:
+    if order.status != OrderStatus.open or order.executor_id is not None:
         raise OrderAlreadyAssignedError()
 
     order.executor_id = executor_id
-    order.status = "assigned"
+    order.status = OrderStatus.assigned
     await session.commit()
     await session.refresh(order)
     return order

@@ -9,8 +9,17 @@ export function getMyOrders() {
   return api.get<Order[]>("/orders/mine");
 }
 
-export function getAvailableOrders() {
-  return api.get<Order[]>("/orders/available");
+export function getAvailableOrders(options: {
+  limit?: number;
+  offset?: number;
+  city?: string;
+} = {}) {
+  const params = new URLSearchParams();
+  if (options.limit !== undefined) params.set("limit", String(options.limit));
+  if (options.offset !== undefined) params.set("offset", String(options.offset));
+  if (options.city) params.set("city", options.city);
+  const query = params.size > 0 ? `?${params.toString()}` : "";
+  return api.get<Order[]>(`/orders/available${query}`);
 }
 
 export function acceptOrder(orderId: number) {

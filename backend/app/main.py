@@ -5,11 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from redis.asyncio import Redis
 
 from app.core.config import settings
-from app.core.database import Base, engine
-from app.modules.chat import models as chat_models
-from app.modules.orders import models as order_models
-from app.modules.users import models as user_models
+from app.core.database import engine
 from app.modules.auth.router import router as auth_router
+from app.modules.chat.router import manager as chat_manager
 from app.modules.chat.router import router as chat_router
 from app.modules.orders.router import router as orders_router
 
@@ -20,14 +18,15 @@ async def lifespan(app: FastAPI):
     try:
         await redis.ping()
         app.state.redis = redis
-
-        async with engine.begin() as connection:
-            await connection.run_sync(Base.metadata.create_all)
+        await chat_manager.start(redis)
 
         yield
     finally:
-        await redis.aclose()
-        await engine.dispose()
+        try:
+            await chat_manager.stop()
+        finally:
+            await redis.aclose()
+            await engine.dispose()
 
 
 app = FastAPI(title="API", lifespan=lifespan)

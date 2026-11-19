@@ -113,6 +113,9 @@ function MessagesDialog({
           loading={chat.loading}
           connected={chat.connected}
           error={chat.error}
+          hasOlderMessages={chat.hasOlderMessages}
+          loadingOlderMessages={chat.loadingOlderMessages}
+          onLoadOlderMessages={() => void chat.loadOlderMessages()}
         />
       ) : (
         <div className="messages__chat messages__chat--empty">

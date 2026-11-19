@@ -37,7 +37,11 @@ describe("AccountOrders", () => {
         availableOrders={[]}
         loading={false}
         error=""
+        availableHasMore={false}
+        loadingMoreAvailable={false}
         onAccept={vi.fn()}
+        onSearchAvailableCity={vi.fn()}
+        onLoadMoreAvailable={vi.fn()}
         onCreateRequest={vi.fn()}
         onOpenMessages={vi.fn()}
       />,

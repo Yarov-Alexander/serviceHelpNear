@@ -1,5 +1,7 @@
 import os
 import secrets
+import subprocess
+import sys
 from pathlib import Path
 
 import uvicorn
@@ -12,4 +14,5 @@ if not os.environ.get("SECRET_KEY"):
         secret_file.chmod(0o600)
     os.environ["SECRET_KEY"] = secret_file.read_text(encoding="utf-8").strip()
 
+subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], check=True)
 uvicorn.run("app.main:app", host="0.0.0.0", port=8000)
