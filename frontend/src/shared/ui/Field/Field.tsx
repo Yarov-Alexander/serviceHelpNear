@@ -1,11 +1,11 @@
 import type { InputHTMLAttributes } from "react";
+import { useId } from 'react'
 import classNames from "classnames";
 import "./Field.scss";
 
 type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   error?: string;
-  className?: string;
   labelClassName?: string;
   inputClassName?: string;
 };
@@ -20,15 +20,17 @@ export function Field({
   "aria-describedby": ariaDescribedBy,
   ...inputProps
 }: FieldProps) {
-  const errorId = error && id ? `${id}-error` : undefined;
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const errorId = error ? `${inputId}-error` : undefined;
 
   return (
     <div className={classNames("field", className)}>
-      <label className={classNames("field__label", labelClassName)} htmlFor={id}>
+      <label className={classNames("field__label", labelClassName)} htmlFor={inputId}>
         {label}
       </label>
       <input
-        id={id}
+        id={inputId}
         className={classNames("field__input", inputClassName)}
         {...inputProps}
         aria-invalid={error ? true : inputProps["aria-invalid"]}
