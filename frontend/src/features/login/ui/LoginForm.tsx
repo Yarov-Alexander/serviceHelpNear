@@ -5,6 +5,7 @@ import { ApiError, tokenStorage } from "@/shared/api";
 import { Field } from "@/shared/ui/Field";
 import { ROUTES } from "@/shared/config";
 import { login } from "../api/login";
+import { getRedirectPath } from "../model/getRedirectPath";
 import { LOGIN_VALIDATION, type LoginRequest } from "../model/types";
 import "./LoginForm.scss";
 
@@ -33,8 +34,7 @@ export function LoginForm() {
     setError("");
 
     try {
-      const destination = (location.state as { from?: { pathname?: string } } | null)?.from
-        ?.pathname;
+      const destination = getRedirectPath(location.state);
       const token = await login(values);
       tokenStorage.set(token.access_token);
       setUser(await getMe());

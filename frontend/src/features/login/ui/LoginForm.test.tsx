@@ -92,4 +92,31 @@ describe("LoginForm", () => {
       role: "customer",
     });
   });
+
+  it("returns to the pathname stored in location state after login", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(api, "post").mockResolvedValueOnce({ access_token: "login-access-token" });
+    vi.spyOn(api, "get").mockResolvedValueOnce({
+      id: 3,
+      email: "person@example.com",
+      role: "customer",
+    });
+
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: "/", state: { from: { pathname: "/requested" } } }]}
+      >
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/requested" element={<p>Запрошенная страница</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await user.type(screen.getByLabelText("Введите email"), "person@example.com");
+    await user.type(screen.getByLabelText("Введите пароль"), "valid-pass-123");
+    await user.click(screen.getByRole("button", { name: "Войти" }));
+
+    expect(await screen.findByText("Запрошенная страница")).toBeInTheDocument();
+  });
 });
